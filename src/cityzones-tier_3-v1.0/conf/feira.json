@@ -1,0 +1,29 @@
+{
+    "left": -39.0210,
+    "bottom": -12.3252,
+    "right": -38.8686,
+    "top": -12.1316,
+    "zone_size": 10,
+    "cache_zones": true,
+    "M": 3,
+    "edus": 300,
+    "geojson": "geojson/feira.geojson",
+    "pois": "osm/feira.osm",
+    "pois_types": {
+        "amenity": {
+            "hospital": {
+                "w": 10.0
+            },
+            "fire_station": {
+                "w": 5.0
+            },
+            "police": {
+                "w": 2.0
+            }
+        },
+        "railway": {}
+    },
+    "output": "csv/feira.csv",
+    "output_edus": "csv/feira_edus.csv",
+    "output_roads": "csv/feira_roads.csv"
+}

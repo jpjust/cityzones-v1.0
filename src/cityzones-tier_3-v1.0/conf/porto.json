@@ -1,0 +1,34 @@
+{
+    "left": -8.6926,
+    "bottom": 41.1352,
+    "right": -8.5405,
+    "top": 41.1939,
+    "zone_size": 10,
+    "cache_zones": true,
+    "M": 3,
+    "edus": 300,
+    "geojson": "geojson/porto.geojson",
+    "pois": "osm/porto.osm",
+    "pois_types": {
+        "amenity": {
+            "hospital": {
+                "w": 10.0
+            },
+            "fire_station": {
+                "w": 5.0
+            },
+            "police": {
+                "w": 2.0
+            }
+        },
+        "railway": {
+            "station": {
+                "w": 1.0
+            }
+        }
+    },
+    "edu_alg": "restricted",
+    "output": "csv/porto_M3.csv",
+    "output_edus": "csv/porto_edus_restricted.csv",
+    "output_roads": "csv/porto_roads.csv"
+}

@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  {% block title %}Help{% endblock %}
+{% endblock %}
+
+{% block content %}
+  <h2>Requesting an AoI classification</h2>
+
+  <p>
+    This web application is intended to provide an easy interface to request map processing tasks to the RiskZones algorithms module (version 2.0), 
+    and to display the result in different ways. For that, the first step is to create a polygon of the AoI (Area of Interest) on <a href="{{ url_for('map.show') }}">the map</a>. Just click
+    the points that make a polygon surrounding the intended AoI. When the first point is clicked again, the polygon is closed.
+    To start over, click &quot;Clear map&quot;.
+  </p>
+
+  <p>
+    For an existing GeoJSON file containing the FeatureCollection with the polygon for the intended AoI, that file can be uploaded just clicking on the &quot;Send GeoJSON&quot; option. 
+    The application will reload the page with the marked AoI.
+  </p>
+
+  <p>
+    After selecting an AoI, the classification parameters can be set through the form below the map. In the available configuration options, Zone length
+    is the size of each zone side in meters. Lower values gives a better resolution, but also takes longer for the
+    classification to complete. The checkboxes are used to select which types of PoIs (Points of Interest) have to be considered for the classification. 
+    One must make sure to select at least one PoI, or the classification will be null.
+  </p>
+
+  <p>
+    Finally, there is the &quot;Request map&quot; option. The web interface will save the request in the proper database so a Maps-services device can get it (through its Worker module) and perform the risks classification. The page will reload and show a message on top indicating
+    that the request has been successfully submited with an identification number. Keep it!
+  </p>
+
+  <h2>Viewing the results</h2>
+
+  <p>
+    On the <a href="{{ url_for('map.results') }}">results page</a> there is a list of all tasks that were requested.
+    Any request will be on this list, each onde identified by a proper ID number.
+  </p>
+
+  <p>
+    The list shows also the timestamp of the task (i.e, when it was created). After the request, the task will be
+    in the &quot;<span class="status_queue">Queued</span>&quot; stage. This mean that the task is in our database
+    waiting for a Maps-service device to get it.
+  </p>
+
+  <p>
+    When a Maps-service device requests a task, the web application will send the first task <span class="status_queue">on queue</span>.
+    The task then gets into the &quot;<span class="status_processing">Processing</span>&quot; stage.
+  </p>
+
+  <p>
+    After finishing the processing of a task, a Maps-service device sends its result to the web application and the tasks enters the
+    &quot;<span class="status_done">Done</span>&quot; stage. The &quot;Show map&quot; button will be displayed at
+    the right of the list. The final results of the performed classification on the target map can be accessed there. 
+    If the results files are too large, a ⚠️ icon will be shown on the button for alerting purposes. The others icons displayed at the right are described
+    as follows:
+  </p>
+
+  <p>
+    <i class="fa-solid fa-cloud-arrow-down fa-xl"></i>: Download a ZIP file containing the CSV data of the classification
+    that can be used in Google Earth Engine. Use the
+    <a href="https://github.com/jpjust/cityzones-maps-service/blob/main/gee_riskzones.js" target="_blank">example script</a>
+    in the project's GitHub repository.
+  </p>
+
+  <p>
+    <i class="fa-solid fa-file fa-xl"></i>: Download a ZIP file containing the configuration JSON and the AoI GeoJSON
+    to be used with the RiskZones tool. Use these files to run the classification tool locally on a computer.
+  </p>
+
+  <p>
+    <i class="fa-solid fa-map fa-xl"></i>: Re-opens the Map view with the AoI used for this task. This feature allows
+    the re-creation of a task with other options.
+  </p>
+
+  <p>
+    Sometimes something wrong may happen on a Maps-service device and the task does not get finished. {{ task_req_exp }}
+    minutes after a worker gets a task. If the results are not received by the web application, the tasks enters the
+    &quot;<span class="status_expired">Expired</span>&quot; state. This does not mean that a requested task will not be computed.
+    Actually, the task returns to the queue, so another Maps-service device can get it and finish. This can also happen if an AoI is too big and
+    the worker takes more than an hour to serve it. Even if a task gets into the expired state, if the worker
+    returns the result it will be received by the web application and displayed on the page.
+  </p>
+
+  <p>
+    Finally, any task may fail. A failure usually occurs if there are no PoIs inside a defined AoI. In this case, the worker will
+    not be able to return a result. If a task is requested {{ task_req_max }} times and gets no result after the expiration period, it is
+    considered as a failed task and it will enter the &quot;<span class="status_failed">Failed</span>&quot; state.
+    In this state the task will not be given to a worker anymore.
+  </p>
+{% endblock %}

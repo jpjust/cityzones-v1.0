@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  {% block title %}About{% endblock %}
+{% endblock %}
+
+{% block content %}
+  <p>
+    CityZones Application Server is a web interface for the <a href="https://github.com/jpjust/cityzones-maps-service" target="_blank">Maps-service</a>,
+    written by Ph.D candidate <a href="http://just.pro.br/" target="_blank">João Paulo Just Peixoto</a> under supervision of
+    Prof. Daniel G. Costa, Ph.D (FEUP) and Prof. Washington de Jesus Sant'Anna da Franca Rocha, Ph.D (UEFS). This work was also supported by
+    a research intership period at FEUP (Porto, Portugal), with supersion of Prof. Paulo Portugal, Ph.D.
+  </p>
+  
+  <p>
+    This web interface manages the interactions with the users when creating a polygonal AoI (Area of Interest) over any city, which is the geographical
+    area to be considered when computing risk zones. Additionally, this web interface is also responsible to display the processed results according to a defined multi-tier architecture. 
+    The computed zones are obtained according to a mathematical model based on the definition of <b>mitigation levels</b>, which are an indirect indication of how hard is to
+    respond (mitigate) to an ongoing emergency after the occurence of a critical event. Each zone is classified in one of three levels: 1 (<b style="color:green">green</b>),
+    2 (<b style="color:yellow">yellow</b>) and 3 (<b style="color:red">red</b>), being red the highest risk and green the lowest. This behavior is based on the premise that the higher the risk level, 
+    the harder is to sucessfully perform a mitigation action in that zone (rescue, fire figthing, crisis control, etc).
+  </p>
+  
+  <p>
+    To have a full understanding of this tool and its functionalities, read the published scientific papers at the following links:
+  </p>
+
+  <ul>
+    <li>
+      The CityZones complete tool, with an improved version of the RiskZones algorithms (2.0), 2023: 
+      <a href="#" target="_blank">Submitted</a>
+    </li>
+    
+    <li>
+      The RiskZones original algorithm (1.0), 2022: 
+      <a href="https://doi.org/10.1109/ISC255366.2022.9922075" target="_blank">Optimizing the deployment of multi-sensors
+      emergencies detection units based on the presence of response centers in smart cities</a>
+    </li>
+    
+    <li>
+      Important definitions and a literature review of emergency-centered smart city solutions, 2022: 
+      <a href="https://doi.org/10.1109/ACCESS.2022.3180033" target="_blank">A Survey of Emergencies Management Systems in Smart Cities</a>
+    </li>
+  </ul>
+
+  <!--<p>This work has been conducted at FEUP/University of Porto during a Doctoral Exchange Program funded by CAPES.</p>-->
+
+  <p>
+    This tool was financed in part by the Coordenação de Aperfeiçoamento de Pessoal de Nível Superior - Brasil (CAPES)
+    - Finance Code 001.
+  </p>
+{% endblock %}

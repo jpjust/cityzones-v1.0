@@ -1,0 +1,193 @@
+:root {
+  --shadowconf: 2px 2px darkgrey;
+}
+
+* {
+  font-family: Helvetica, sans-serif;
+}
+
+body {
+  margin: auto;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 10px);
+  padding: 5px;
+}
+
+.container > div {
+  margin: 2px;
+}
+
+.top_bar {
+  display: flex;
+  flex-grow: 0;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 5px;
+  border: 1pt black solid;
+  background-color: aliceblue;
+  box-shadow: var(--shadowconf);
+}
+
+.title {
+  font-size: xx-large;
+  font-weight: bold;
+}
+
+.nav {
+  margin: 10px;
+  right: 0;
+}
+
+.nav a {
+  color: green;
+  background: rgb(200, 255, 200);
+  border: 1px green solid;
+  padding: 5px 10px;
+  text-decoration: none;
+  font-size: medium;
+}
+
+.messages {
+  flex-grow: 0;
+}
+
+.info_msg {
+  color: blue;
+  background: lightblue;
+  border: 1px blue solid;
+  box-shadow: var(--shadowconf);
+  padding: 5px;
+}
+
+.error_msg {
+  color: red;
+  background: rgb(255, 196, 196);
+  border: 1px red solid;
+  box-shadow: var(--shadowconf);
+  padding: 5px;
+}
+
+.content {
+  flex-grow: 1;
+}
+
+.map_ui {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  height: 100%;
+}
+
+#map {
+  height: calc(100% - 2px);
+  flex-grow: 1;
+  margin-right: 5px;
+  border: 1px black solid;
+  box-shadow: var(--shadowconf);
+}
+
+.maptools {
+  display: flex;
+  flex-direction: column;
+  font-size: small;
+  padding: 5px;
+  border: 1pt black solid;
+  background-color: aliceblue;
+  box-shadow: var(--shadowconf);
+}
+
+.mapform {
+  overflow-y: scroll;
+  height: 50vh;
+}
+
+.mapform_inner {
+  display: flex;
+  flex-direction: column;
+}
+
+.mapform_inner_horizontal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.slidecontainer {
+  display: flex;
+  align-items: center;
+  vertical-align: middle;
+  margin-bottom: 5px;
+}
+
+button {
+  color: green;
+  background: rgb(200, 255, 200);
+  border: 1px green solid;
+  padding: 5px 10px;
+  margin: 5px;
+}
+
+.button_red {
+  color: red;
+  background: rgb(255, 200, 200);
+  border: 1px red solid;
+}
+
+input {
+  padding: 5px 10px;
+  margin: 5px;
+}
+
+.results_list {
+  font-size: small;
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+  border: 1pt black solid;
+  background-color: aliceblue;
+  box-shadow: var(--shadowconf);
+  justify-content: space-between;
+}
+
+.results_table {
+  overflow-y: scroll;
+  height: calc(75vh);
+}
+
+.result_item:hover {
+  background-color: lightblue;
+}
+
+.result_cell {
+  border-top: 1pt black solid;
+}
+
+.status_queue {
+  color: black;
+}
+
+.status_processing {
+  color: blue;
+}
+
+.status_expired {
+  color: orange;
+}
+
+.status_done {
+  color: green;
+}
+
+.status_failed {
+  color: red;
+}
+
+.fa-icon a {
+  color: darkslategray;
+}

@@ -1,0 +1,321 @@
+{% extends 'base.html' %}
+
+{% block htmlhead %}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+{% endblock %}
+
+{% block header %}
+  {% block title %}Map{% endblock %}
+{% endblock %}
+
+{% block content %}
+  <div class="map_ui">
+    <div id="map"></div>
+  
+    <div class="maptools">
+      <form action="{{ url_for('map.geojson_map') }}" method="POST" enctype="multipart/form-data">
+        <p style="text-align: center;"><strong>Select AoI from GeoJSON</strong></p>
+        <div class="mapform_inner">
+          <input type="file" name="geojson">
+          <button type="submit">Send GeoJSON</button>
+        </div>
+      </form>
+
+      <p style="text-align: center;"><strong>AoI marking</strong></p>
+
+      <form action="{{ url_for('map.run') }}" method="POST">
+        <input type="hidden" id="polygon" name="polygon" value="{{ polygon }}">
+        <input type="hidden" id="center_lat" value="{{ lat }}">
+        <input type="hidden" id="center_lon" value="{{ lon }}">
+
+        <div class="mapform_inner">
+          <button type="button" onclick="clearlastmarker();">Clear last marker</button>
+          <button type="button" class="button_red" onclick="clearmap();">Clear map</button>
+          <select id="select_country" onchange="changeCountry();">
+            <option>-- Find country --</option>
+          </select>
+        </div>
+
+        <p style="text-align: center;"><strong>Settings</strong></p>
+
+        <div class="mapform mapform_inner">
+          <div class="mapform_inner_horizontal">
+            <label for="zl">Zone lenght (zl):</label>
+            <input type="text" id="zl" name="zl" size="5" value="30" required>
+          </div>
+  
+          <p style="text-align: center;"><strong>Points of Interest (PoIs)</strong></p>
+          
+          <div class="mapform_inner_horizontal">
+            <div>
+              <input type="checkbox" id="poi_hospital" name="poi_hospital" value="1" checked>
+              <label for="poi_hospital">Hospitals</label>
+            </div>
+            <div>
+              <label for="w_hospital">f(p):</label>
+              <input type="text" id="w_hospital" name="w_hospital" value="10" size="2" required>
+            </div>
+          </div>
+          
+          <div class="mapform_inner_horizontal">
+            <div>
+              <input type="checkbox" id="poi_firedept" name="poi_firedept" value="1" checked>
+              <label for="poi_firedept">Fire Stations</label>
+            </div>
+            <div>
+              <label for="w_firedept">f(p):</label>
+              <input type="text" id="w_firedept" name="w_firedept" value="5" size="2" required>
+            </div>
+          </div>
+          
+          <div class="mapform_inner_horizontal">
+            <div>
+              <input type="checkbox" id="poi_police"   name="poi_police"   value="1" checked>
+              <label for="poi_police">Police Stations</label>
+            </div>
+            <div>
+              <label for="w_police">f(p):</label>
+              <input type="text" id="w_police" name="w_police" value="2" size="2" required>
+            </div>
+          </div>
+
+          <div class="mapform_inner_horizontal">
+            <div>
+              <input type="checkbox" id="poi_metro"   name="poi_metro"   value="1">
+              <label for="poi_metro">Metro Stations</label>
+            </div>
+            <div>
+              <label for="w_metro">f(p):</label>
+              <input type="text" id="w_metro" name="w_metro" value="1" size="2" required>
+            </div>
+          </div>
+
+          <p style="text-align: center;"><strong>EDUs positioning</strong></p>
+          
+          <div class="mapform_inner_horizontal">
+            <div>
+              <label for="edus">Number of EDUs:</label>
+              <input type="text" id="edus" name="edus" size="5" value="300" required>
+            </div>
+          </div>
+
+          <div class="mapform_inner_horizontal">
+            <div>
+              <input type="radio" id="alg_none" name="edu_alg" value="none" checked>
+              <label for="alg_none">None (no EDUs positioning)</label>
+            </div>
+          </div>
+          
+          <div class="mapform_inner_horizontal">
+            <div>
+              <input type="radio" id="alg_random" name="edu_alg" value="random">
+              <label for="alg_random">Random</label>
+            </div>
+          </div>
+
+          <div class="mapform_inner_horizontal">
+            <div>
+              <input type="radio" id="alg_balanced" name="edu_alg" value="balanced">
+              <label for="alg_balanced">Balanced</label>
+            </div>
+          </div>
+
+          <div class="mapform_inner_horizontal">
+            <div>
+              <input type="radio" id="alg_enhanced" name="edu_alg" value="enhanced">
+              <label for="alg_enhanced">Balanced+</label>
+            </div>
+          </div>
+
+          <div class="mapform_inner_horizontal">
+            <div>
+              <input type="radio" id="alg_restricted" name="edu_alg" value="restricted">
+              <label for="alg_restricted">Restricted</label>
+            </div>
+          </div>
+
+          <p style="text-align: center;"><strong>Request description</strong></p>
+          
+          <div class="mapform_inner_horizontal" style="justify-content: center;">
+            <textarea id="description" name="description" size="30x5" required></textarea>
+          </div>
+        </div>
+
+        <div class="mapform_inner">
+          <button type="submit">Request map</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+  <script>
+    const center_lat = parseFloat(document.getElementById('center_lat').value);
+    const center_lon = parseFloat(document.getElementById('center_lon').value);
+    const map = L.map('map').setView([center_lat, center_lon], 6);
+    const markers = [];
+    const polpoints = [];
+    const html_polygon = document.getElementById('polygon');
+    
+    let polygon = null;
+    let closed = false;
+  
+    const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> | <a href="https://cityzones.just.pro.br">CityZones</a>'
+    }).addTo(map);
+
+    // Check if there is a polygon
+    const html_polpoints = eval(html_polygon.value);
+    if (html_polpoints.length > 0) {
+      html_polpoints.forEach((value, index, array) => {
+        addpoint(value[1], value[0]);
+      });
+
+      createpolygon();
+      map.fitBounds(polygon.getBounds());
+    }
+
+    /**
+     *  Add polygon point function.
+     *
+     *  Adds a new polygon point to the set and a marker on the map.
+     */
+    function addpoint(lat, lon) {
+      // If the polygon is already closed, we don't allow more points
+      if (closed == true) {
+        return;
+      }
+
+      // Push the coordinates to our polygon list
+      polpoints.push({
+        'lat': lat,
+        'lon': lon
+      });
+
+      // Creates a marker
+      let marker = L.marker([lat, lon]).addTo(map);
+      markers.push(marker);
+    }
+
+    function createpolygon() {
+      let str_polygon = '';
+
+      for (let i = 0; i < polpoints.length - 1; i++) {
+        str_polygon = str_polygon + '[' + polpoints[i]['lon'] + ', ' + polpoints[i]['lat'] + '], ';
+      }
+      let i = polpoints.length - 1;
+      str_polygon = str_polygon + '[' + polpoints[i]['lon'] + ', ' + polpoints[i]['lat'] + ']';
+
+      html_polygon.value = '[' + str_polygon + ']';
+      polygon = L.polygon([...polpoints]).addTo(map);
+      closed = true;
+    }
+
+    /**
+     *  Clear map function.
+     *
+     *  Clears the map markings (markers and polygon).
+     */
+    function clearmap() {
+      if (polygon) {
+        map.removeLayer(polygon);
+        polygon = null;
+      }
+      
+      while (markers.length > 0) {
+        marker = markers.pop();
+        map.removeLayer(marker);
+      }
+
+      while (polpoints.length > 0) {
+        polpoints.pop();
+      }
+
+      closed = false;
+    }
+
+    /**
+     *  Clear last marker function.
+     *
+     *  Clears the last marker on the map. Works like an undo button.
+     */
+    function clearlastmarker() {
+      if (markers.length > 0) {
+        marker = markers.pop();
+        polpoints.pop();
+        map.removeLayer(marker);
+      }
+      
+      if (polygon) {
+        map.removeLayer(polygon);
+        polygon = null;
+        closed = false;
+      }
+    }
+
+    /**
+     *  Click event.
+     *  
+     *  Whenever a user clicks on the map, the app should add the corresponding
+     *  coordiniates to create a list of points that will generate a polygon
+     *  for AoI selection.
+     */
+    function onMapClick(e) {
+      addpoint(e.latlng['lat'], e.latlng['lng']);
+
+      // The first marker gets a click event to close the polygon
+      if (markers.length == 1) {
+        markers[0].on('click', (e) => {
+          createpolygon();
+        });
+      }
+    }
+
+    /**
+     *  Countries list.
+     *  
+     *  Populate the countries list from countries.csv.
+     */
+    function countriesPopulate() {
+      fetch('/map/countries')
+        .then((res) => {
+          return res.json();
+        })
+        .then((json) => {
+          let select = document.getElementById('select_country');
+          json['countries'].forEach((value, index, array) => {
+            let op = document.createElement("option");
+            if (value['name'].length > 20) {
+              op.text = value['name'].substring(0, 20) + '...';
+            } else {
+              op.text = value['name'];
+            }
+            op.value = value['lat'] + ',' + value['lon'];
+            select.options.add(op);
+          });
+        })
+        .catch((err) => {
+          console.log('Error!');
+        });
+    }
+
+    /**
+     *  Change the map position to the selected country.
+     */
+    function changeCountry() {
+      try {
+        const select = document.getElementById('select_country');
+        const country = select.selectedOptions[0];
+        const [lat, lon] = country['value'].split(',');
+        map.setView([parseFloat(lat), parseFloat(lon)]);
+      } catch (error) {
+        console.log('No country selected.');
+      }
+    }
+  
+    map.on('click', onMapClick);
+    countriesPopulate();
+  </script>
+{% endblock %}

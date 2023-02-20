@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} - CityZones Web App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://kit.fontawesome.com/6836d4b5c9.js" crossorigin="anonymous"></script>
+    {% block htmlhead %}{% endblock %}
+  </head>
+  <body>
+    <div class="container">
+
+      <div class="top_bar">
+        <div class="title">
+          CityZones Web
+          <span style="font-size: 0.7em; font-weight: normal;">
+            <br>
+            {% block header %}{% endblock %}
+          </span>
+        </div>
+
+        <div class="nav">
+          <a href="{{ url_for ('map.show') }}">Map</a>
+          <a href="{{ url_for ('map.results') }}">Tasks</a>
+          <a href="{{ url_for ('help.index') }}">Help</a>
+          <a href="{{ url_for ('about.index') }}">About</a>
+        </div>
+      </div>
+
+      <div class="messages">
+        {% for message in get_flashed_messages() %}
+          <div class="flash">{{ message }}</div>
+        {% endfor %}
+
+        <section class="messages">
+          {% if info_msg %}
+            <div class="info_msg">{{ info_msg }}</div>
+          {% endif %}
+          {% if error_msg %}
+            <div class="error_msg">{{ error_msg }}</div>
+          {% endif %}
+        </section>
+      </div>
+
+      <div class="content">
+        {% block content %}{% endblock %}
+      </div>
+
+    </div>
+  </body>
+</html>
