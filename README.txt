@@ -1,6 +1,6 @@
 # CityZones Application Server
 
-CityZones Application Server is a web interface and back-end application for CityZones Maps-service: https://github.com/jpjust/cityzones-maps-service
+CityZones Application Server is a web interface and back-end application for CityZones Maps-service.
 
 The web interface works as a client for the user, so the user can configure an AoI to reqeuest a RiskZones classification. The Maps-service workers will periodically request a task from the CityZones Application Server to perform it locally and then send the results back. The web interface can then present the results to the user.
 
@@ -46,7 +46,7 @@ To plot a map of the risk zones and the EDUs, run the script in `gee_riskzones.j
 
 ## Worker
 
-The `worker.py` program acts as a Worker module for the CityZones Application server: https://github.com/jpjust/cityzones-application-server
+The `worker.py` program acts as a Worker module for the CityZones Application server.
 
 It will periodically requests a task from CityZones web service to perform it locally and then send the results back. If you want to contribute to the project being a Maps-service worker, contact-me at joao.just@ifba.edu.br
 
